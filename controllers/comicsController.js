@@ -118,7 +118,8 @@ exports.deleteComic = async (req, res) => {
 
         await comic.destroy();
         logger.info(`Comic with ID ${comicId} was deleted by user ${req.user.id}`); // Journalisation
-        return res.status(204).send();
+        // return res.status(204).send(); // No content
+        return res.status(200).json({ message: `Comic with ID ${comicId} was successfully deleted.` });
     } catch (error) {
         logger.error(`Error deleting comic with ID ${req.params.id}: ${error.message}`); // Journalisation des erreurs
         return res.status(500).json({ message: 'Server Error', error: error.message });
