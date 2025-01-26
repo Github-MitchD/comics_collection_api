@@ -17,8 +17,33 @@ const comicSchema = Joi.object({
 
 exports.getAllComics = async (req, res) => {
     try {
-        const comics = await Comic.findAll();
-        return res.status(200).json(comics);
+        const { page = 1, limit = 10, title, author, collection } = req.query;
+        const offset = (page - 1) * limit;
+        const where = {};
+
+        if (title) {
+            where.title = { [Op.like]: `%${title}%` };
+        }
+        if (author) {
+            where.author = { [Op.like]: `%${author}%` };
+        }
+        if (collection) {
+            where.collection = { [Op.like]: `%${collection}%` };
+        }
+
+        const comics = await Comic.findAndCountAll({
+            where,
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+            order: [['createdAt', 'DESC']]
+        });
+
+        return res.status(200).json({
+            total: comics.count,
+            pages: Math.ceil(comics.count / limit),
+            currentPage: parseInt(page),
+            comics: comics.rows
+        });
     } catch (error) {
         logger.error(`Error fetching comics: ${error.message}`);
         return res.status(500).json({ message: 'There was a problem trying to get all comics', error: error.message });
