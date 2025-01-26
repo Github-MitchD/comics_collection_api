@@ -1,6 +1,7 @@
 const { Comic } = require('../models');
 const { Op } = require('sequelize');
 const Joi = require('joi');
+const logger = require('../utils/logger');
 
 // Schéma de validation pour les comics
 const comicSchema = Joi.object({
@@ -100,4 +101,26 @@ exports.updateComic = async (req, res) => {
         }
         return res.status(500).json({ message: 'There was a problem trying to update the comic', error: error.message });
     }
-}
+};
+
+exports.deleteComic = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const comicId = parseInt(id);
+        if (isNaN(comicId)) {
+            return res.status(400).json({ message: 'Comic ID is not valid.' });
+        }
+
+        const comic = await Comic.findByPk(comicId);
+        if (!comic) {
+            return res.status(404).json({ message: 'Comic not found' });
+        }
+
+        await comic.destroy();
+        logger.info(`Comic with ID ${comicId} was deleted by user ${req.user.id}`); // Journalisation
+        return res.status(204).send();
+    } catch (error) {
+        logger.error(`Error deleting comic with ID ${req.params.id}: ${error.message}`); // Journalisation des erreurs
+        return res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
