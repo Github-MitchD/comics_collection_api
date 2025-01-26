@@ -93,6 +93,29 @@ exports.getComicsByAuthor = async (req, res) => {
     }
 };
 
+exports.getComicsByCollection = async (req, res) => {
+    try {
+        const { collection } = req.params;
+        if (!collection) {
+            return res.status(400).json({ message: 'Collection is required.' });
+        }
+
+        const comics = await Comic.findAll({
+            where: { collection: { [Op.like]: `%${collection}%` } },
+            order: [['createdAt', 'DESC']]
+        });
+
+        if (comics.length === 0) {
+            return res.status(404).json({ message: 'No comics found for this collection.' });
+        }
+
+        return res.status(200).json(comics);
+    } catch (error) {
+        logger.error(`Error fetching comics by collection ${req.params.collection}: ${error.message}`);
+        return res.status(500).json({ message: 'There was a problem trying to get comics by collection', error: error.message });
+    }
+};
+
 exports.createComic = async (req, res) => {
     try {
         const { error } = comicSchema.validate(req.body);

@@ -51,6 +51,12 @@ Content-Type: application/json
 
 ###
 
+### Récupérer tous les comics par collection
+GET http://localhost:8989/comics/collection/Hors-série
+Content-Type: application/json
+
+###
+
 ### Créer un nouveau comic (avec token JWT)
 POST http://localhost:8989/comics
 Content-Type: application/json
