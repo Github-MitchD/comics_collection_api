@@ -1,4 +1,10 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM3ODU2NzA5LCJleHAiOjE3Mzc4NjAzMDl9.hJ4sSfia9VRFbTCCleAUd5lozE57lSmiyvFHmEAHBq4
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM3ODk4MDgyLCJleHAiOjE3Mzc5MDE2ODJ9.OXVsRDYpsrb-1rqedPMe2mkEMkoznl2O3jTkr-W-UXU
+
+### Vérifier la racine de l'API
+GET http://localhost:8989/
+Content-Type: application/json
+
+###
 
 ### Enregistrer un nouvel utilisateur
 POST http://localhost:8989/auth/register
@@ -25,20 +31,26 @@ Content-Type: application/json
 
 ###
 
+### Récupérer un comic par ID
+GET http://localhost:8989/comics/1
+Content-Type: application/json
+
+###
+
 ### Créer un nouveau comic (avec token JWT)
 POST http://localhost:8989/comics
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "title": "Example Comic",
-  "slug": "example-comic",
+  "title": "Example Comic 2",
+  "slug": "example-comic-2",
   "frontCover": "http://example.com/front-cover.jpg",
   "backCover": "http://example.com/back-cover.jpg",
   "description": "This is an example comic description.",
   "collection": "Hors-série",
-  "tome": 1,
-  "author": "John Doe"
+  "tome": 2,
+  "author": "Jane Doe"
 }
 
 ###
