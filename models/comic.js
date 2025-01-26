@@ -14,6 +14,7 @@ module.exports = (sequelize) => {
     slug: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: { msg: "This slug already exists." },
       validate: {
         notEmpty: { msg: "The slug is required." },
         notNull: { msg: "The slug is required." },
@@ -62,7 +63,12 @@ module.exports = (sequelize) => {
         notEmpty: { msg: "The author is required." },
         notNull: { msg: "The author is required." },
       }
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
     }
+  }, {
+    paranoid: true,
   });
 
   return Comic;
