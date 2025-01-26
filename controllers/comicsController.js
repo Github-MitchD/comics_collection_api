@@ -1,5 +1,18 @@
 const { Comic } = require('../models');
 const { Op } = require('sequelize');
+const Joi = require('joi');
+
+// Schéma de validation pour les comics
+const comicSchema = Joi.object({
+    title: Joi.string().required(),
+    slug: Joi.string().required(),
+    frontCover: Joi.string().required(),
+    backCover: Joi.string().required(),
+    description: Joi.string().required(),
+    collection: Joi.string().required(),
+    tome: Joi.number().integer().required(),
+    author: Joi.string().required()
+});
 
 exports.getAllComics = async (req, res) => {
     try {
@@ -29,13 +42,11 @@ exports.getComicById = async (req, res) => {
 
 exports.createComic = async (req, res) => {
     try {
-        const { title, slug, frontCover, backCover, description, collection, tome, author } = req.body;
-
-        // Validation des données d'entrée
-        if (!title || !slug || !frontCover || !backCover || !description || !collection || !tome || !author) {
-            return res.status(400).json({ message: 'All fields are required.' });
+        const { error } = comicSchema.validate(req.body);
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
         }
-
+        const { title, slug, frontCover, backCover, description, collection, tome, author } = req.body;
         const newComic = await Comic.create({ title, slug, frontCover, backCover, description, collection, tome, author });
         return res.status(201).json(newComic);
     } catch (error) {
@@ -48,9 +59,15 @@ exports.createComic = async (req, res) => {
 
 exports.updateComic = async (req, res) => {
     try {
-        const comicId = parseInt(req.params.id);
-        if (!comicId || isNaN(comicId)) {
+        const { id } = req.params;
+        const comicId = parseInt(id);
+        if (isNaN(comicId)) {
             return res.status(400).json({ message: 'Comic ID is not valid.' });
+        }
+
+        const { error } = comicSchema.validate(req.body);
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
         }
 
         const comic = await Comic.findByPk(comicId);
@@ -73,15 +90,9 @@ exports.updateComic = async (req, res) => {
             }
         }
 
-        const { title, slug, frontCover, backCover, description, collection, tome, author } = req.body;
-
-        // Validation des données d'entrée
-        if (!title || !slug || !frontCover || !backCover || !description || !collection || !tome || !author) {
-            return res.status(400).json({ message: 'All fields are required.' });
-        }
-
-        await comic.update({ title, slug, frontCover, backCover, description, collection, tome, author });
-        return res.status(200).json(comic);
+        // Mise à jour des champs modifiés
+        const updatedComic = await comic.update(req.body);
+        return res.status(200).json(updatedComic);
     }
     catch (error) {
         if (error.name === 'SequelizeUniqueConstraintError') {
