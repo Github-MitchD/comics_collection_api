@@ -25,8 +25,8 @@ Content-Type: application/json
   "password": "password_1234"
 }
 
-### Récupérer tous les comics
-GET http://localhost:8989/comics
+### Récupérer tous les comics avec pagination et filtres
+GET http://localhost:8989/comics?page=1&limit=10&title=example&author=John&collection=Hors-série
 Content-Type: application/json
 
 ###
