@@ -34,13 +34,19 @@ Content-Type: application/json
 ###
 
 ### Récupérer tous les comics avec pagination et filtres
-GET http://localhost:8989/comics?page=1&limit=10&title=example&author=John&collection=Hors-série
+GET http://localhost:8989/comics?page=1&limit=10&search=john
 Content-Type: application/json
 
 ###
 
 ### Récupérer un comic par ID
 GET http://localhost:8989/comics/1
+Content-Type: application/json
+
+###
+
+### Récupérer tous les comics par auteur
+GET http://localhost:8989/comics/author/Jane%20Doe
 Content-Type: application/json
 
 ###

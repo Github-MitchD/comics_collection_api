@@ -70,6 +70,29 @@ exports.getComicById = async (req, res) => {
     }
 };
 
+exports.getComicsByAuthor = async (req, res) => {
+    try {
+        const { author } = req.params;
+        if (!author) {
+            return res.status(400).json({ message: 'Author is required.' });
+        }
+
+        const comics = await Comic.findAll({
+            where: { author: { [Op.like]: `%${author}%` } },
+            order: [['createdAt', 'DESC']]
+        });
+
+        if (comics.length === 0) {
+            return res.status(404).json({ message: 'No comics found for this author.' });
+        }
+
+        return res.status(200).json(comics);
+    } catch (error) {
+        logger.error(`Error fetching comics by author ${req.params.author}: ${error.message}`);
+        return res.status(500).json({ message: 'There was a problem trying to get comics by author', error: error.message });
+    }
+};
+
 exports.createComic = async (req, res) => {
     try {
         const { error } = comicSchema.validate(req.body);
