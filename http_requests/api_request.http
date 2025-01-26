@@ -1,0 +1,45 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM3ODU2NzA5LCJleHAiOjE3Mzc4NjAzMDl9.hJ4sSfia9VRFbTCCleAUd5lozE57lSmiyvFHmEAHBq4
+
+### Enregistrer un nouvel utilisateur
+POST http://localhost:8989/auth/register
+Content-Type: application/json
+
+{
+  "username": "Mitch",
+  "email": "contact@michel-dufour.fr",
+  "password": "password_1234"
+}
+
+### Obtenir un token JWT en se connectant
+POST http://localhost:8989/auth/login
+Content-Type: application/json
+
+{
+  "email": "contact@michel-dufour.fr",
+  "password": "password_1234"
+}
+
+### Récupérer tous les comics
+GET http://localhost:8989/comics
+Content-Type: application/json
+
+###
+
+### Créer un nouveau comic (avec token JWT)
+POST http://localhost:8989/comics
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Example Comic",
+  "slug": "example-comic",
+  "frontCover": "http://example.com/front-cover.jpg",
+  "backCover": "http://example.com/back-cover.jpg",
+  "description": "This is an example comic description.",
+  "collection": "Hors-série",
+  "tome": 1,
+  "author": "John Doe"
+}
+
+###
+
