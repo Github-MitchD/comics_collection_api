@@ -5,7 +5,24 @@ exports.getAllComics = async (req, res) => {
         const comics = await Comic.findAll();
         return res.status(200).json(comics);
     } catch (error) {
-        return res.status(500).json({ message: 'Server Error', error: error.message });
+        return res.status(500).json({ message: 'There was a problem trying to get all comics', error: error.message });
+    }
+};
+
+exports.getComicById = async (req, res) => {
+    try {
+        const comicId = parseInt(req.params.id);
+        if (!comicId || isNaN(comicId)) {
+            return res.status(400).json({ message: 'Comic ID is not valid.' });
+        }
+        const comic = await Comic.findByPk(comicId);
+        if (!comic) {
+            return res.status(404).json({ message: 'Comic not found' });
+        }
+        return res.status(200).json(comic);
+    }
+    catch (error) {
+        return res.status(500).json({ message: 'There was a problem trying to get the comic', error: error.message });
     }
 };
 
