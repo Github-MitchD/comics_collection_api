@@ -17,18 +17,16 @@ const comicSchema = Joi.object({
 
 exports.getAllComics = async (req, res) => {
     try {
-        const { page = 1, limit = 10, title, author, collection } = req.query;
+        const { page = 1, limit = 10, search } = req.query;
         const offset = (page - 1) * limit;
         const where = {};
 
-        if (title) {
-            where.title = { [Op.like]: `%${title}%` };
-        }
-        if (author) {
-            where.author = { [Op.like]: `%${author}%` };
-        }
-        if (collection) {
-            where.collection = { [Op.like]: `%${collection}%` };
+        if (search) {
+            where[Op.or] = [
+                { title: { [Op.like]: `%${search}%` } },
+                { author: { [Op.like]: `%${search}%` } },
+                { collection: { [Op.like]: `%${search}%` } }
+            ];
         }
 
         const comics = await Comic.findAndCountAll({
