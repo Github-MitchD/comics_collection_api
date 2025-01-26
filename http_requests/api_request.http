@@ -1,4 +1,4 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM3ODk4MDgyLCJleHAiOjE3Mzc5MDE2ODJ9.OXVsRDYpsrb-1rqedPMe2mkEMkoznl2O3jTkr-W-UXU
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM3OTAzMjM0LCJleHAiOjE3Mzc5MDY4MzR9.duGLZlRlFgq-9YzIOlxmoha1iCQx4uhZFxmU9-w7qBE
 
 ### Vérifier la racine de l'API
 GET http://localhost:8989/
@@ -55,3 +55,18 @@ Authorization: Bearer {{token}}
 
 ###
 
+### Mettre à jour un comic (avec token JWT)
+PUT http://localhost:8989/comics/8
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Example Comic 2",
+  "slug": "example-comic-2",
+  "frontCover": "http://example.com/front-cover.jpg",
+  "backCover": "http://example.com/back-cover.jpg",
+  "description": "This is an example comic description.",
+  "collection": "Hors-série",
+  "tome": 2,
+  "author": "Jane Doe"
+}
