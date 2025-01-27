@@ -119,11 +119,13 @@ exports.deleteAuthor = async (req, res) => {
         if (isNaN(authorId)) {
             return res.status(400).json({ message: 'Author ID is not valid.' });
         }
-        const author = await Author.findByPk(id);
+        const author = await Author.findByPk(id, { include: ['comics'] });
         if (!author) {
             return res.status(404).json({ message: 'Author not found' });
         }
-
+        if (author.comics.length > 0) {
+            return res.status(400).json({ message: 'Cannot delete author with associated comics.' });
+        }
         await author.destroy();
         logger.info(`Author with ID ${id} was deleted by user ${req.user.id}`);
         return res.status(200).json({ message: `Author with ID ${authorId} was successfully deleted.` });
