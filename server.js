@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { sequelize } = require('./models');
 const comicsController = require('./controllers/comicsController');
-// const usersController = require('./controllers/usersController');
 require('dotenv').config();
 
 const app = express();
@@ -14,6 +13,7 @@ app.use(bodyParser.json());
 // Importation des routes
 const comicsRoutes = require('./routes/comics');
 const authRoutes = require('./routes/auth');
+const authorRoutes = require('./routes/authors');
 
 // Route pour la racine de l'API
 app.get('/', (req, res) => {
@@ -37,9 +37,7 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/comics', comicsRoutes);
 app.use('/auth', authRoutes);
-
-// app.get('/users', usersController.getAllUsers);
-// app.post('/users', usersController.createUser);
+app.use('/authors', authorRoutes);
 
 // Synchronisation de la base de données et démarrage du serveur
 sequelize.sync()
