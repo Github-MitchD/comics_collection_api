@@ -15,6 +15,12 @@ const comicsRoutes = require('./routes/comics');
 const authRoutes = require('./routes/auth');
 const authorRoutes = require('./routes/authors');
 
+// Importation de Swagger
+const { swaggerUi, specs, swaggerOptions } = require('./config/swagger');
+
+// Route pour la documentation Swagger
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerOptions));
+
 // Route pour la racine de l'API
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -27,9 +33,14 @@ app.get('/', (req, res) => {
             website: 'https://micheldufour.fr',
             github: 'https://github.com/Github-MitchD'
         },
+        license: {
+            name: 'MIT',
+            url: 'https://opensource.org/licenses/MIT'
+        },
         endpoints: {
             comics: '/comics',
-            auth: '/auth'
+            auth: '/auth',
+            authors: '/authors'
         }
     });
 });
