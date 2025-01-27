@@ -64,7 +64,7 @@ Le serveur sera accessible sur http://localhost:8989.
 La documentation de l'API est disponible à l'adresse http://localhost:8989/docs lorsque le serveur est en cours d'exécution. Elle fournit des informations détaillées sur les endpoints disponibles, les paramètres de requête et les réponses
 
 ## Structure du projet
-Pour une vue d'ensemble de la structure du projet, consultez le fichier [STRUCTURE.md](STRUCTURE.md).
+Pour une vue d'ensemble de la structure du projet, consultez le fichier [structure.md](structure.md).
 
 ## Variables d'environnement
 Les variables d'environnement sont stockées dans un fichier `.env` à la racine du projet. Elles sont chargées dans l'application à l'aide du package `dotenv`.
