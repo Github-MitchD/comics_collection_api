@@ -46,7 +46,7 @@ Content-Type: application/json
 ###
 
 ### Récupérer tous les comics par auteur
-GET http://localhost:8989/comics/author/Jane%20Doe
+GET http://localhost:8989/comics/author/John%20Doe
 Content-Type: application/json
 
 ###
