@@ -1,0 +1,90 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM3OTQ5MzEwLCJleHAiOjE3Mzc5NTI5MTB9.GBMmZsDUewALplknXtK3KhJCLgBTS8dqBB4_okqGdCI
+
+### Vérifier la racine de l'API
+GET http://localhost:8989/
+Content-Type: application/json
+
+###
+
+### Enregistrer un nouvel utilisateur
+POST http://localhost:8989/auth/register
+Content-Type: application/json
+
+{
+  "username": "Mitch",
+  "email": "contact@michel-dufour.fr",
+  "password": "password_1234"
+}
+
+### Obtenir un token JWT en se connectant
+POST http://localhost:8989/auth/login
+Content-Type: application/json
+
+{
+  "email": "contact@michel-dufour.fr",
+  "password": "password_1234"
+}
+
+###
+### Récupérer tous les auteurs
+GET http://localhost:8989/authors
+Content-Type: application/json
+
+###
+
+### Récupérer tous les auteurs avec pagination
+GET http://localhost:8989/authors?page=1&limit=10
+Content-Type: application/json
+
+###
+
+### Récupérer tous les auteurs avec pagination et filtres
+GET http://localhost:8989/authors?page=1&limit=10&search=john
+Content-Type: application/json
+
+###
+
+### Récupérer un auteur par ID
+GET http://localhost:8989/authors/1
+Content-Type: application/
+
+###
+
+### Créer un nouveau auteur (avec token JWT)
+POST http://localhost:8989/authors
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "John Doe",
+  "slug": "john-doe",
+  "image": "http://example.com/john-doe.jpg",
+  "birthdate": "1980-01-01",
+  "bio": "This is an example author biography.",
+  "website": "http://example.com"
+}
+
+###
+
+### Mettre à jour un auteur (avec token JWT)
+PUT http://localhost:8989/authors/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "J Doe",
+  "slug": "john-doe",
+  "image": "http://example.com/john-doe.jpg",
+  "birthdate": "1980-01-01",
+  "bio": "This is an example author biography with maj.",
+  "website": "http://example.com"
+}
+
+###
+
+### Supprimer un auteur (avec token JWT)
+DELETE http://localhost:8989/authors/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
