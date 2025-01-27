@@ -56,12 +56,12 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    author: {
-      type: DataTypes.STRING,
+    authorId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      validate: {
-        notEmpty: { msg: "The author is required." },
-        notNull: { msg: "The author is required." },
+      references: {
+        model: 'Authors',
+        key: 'id'
       }
     },
     deletedAt: {
@@ -70,6 +70,10 @@ module.exports = (sequelize) => {
   }, {
     paranoid: true,
   });
+
+  Comic.associate = (models) => {
+    Comic.belongsTo(models.Author, { foreignKey: 'authorId', as: 'author' });
+  };
 
   return Comic;
 };
