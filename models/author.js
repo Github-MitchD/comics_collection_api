@@ -11,6 +11,15 @@ module.exports = (sequelize) => {
                 notNull: { msg: "The name is required." },
             }
         },
+        slug: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
+            validate: {
+                notEmpty: { msg: "The slug is required." },
+                notNull: { msg: "The slug is required." },
+            }
+        },
         image: {
             type: DataTypes.STRING,
             allowNull: false
