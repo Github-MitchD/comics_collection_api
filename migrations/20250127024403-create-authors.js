@@ -15,6 +15,11 @@ module.exports = {
         allowNull: false,
         unique: true
       },
+      slug: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
+      },
       image: {
         type: Sequelize.STRING,
         allowNull: false
