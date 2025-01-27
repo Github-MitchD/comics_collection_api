@@ -1,4 +1,4 @@
-const { Comic } = require('../models');
+const { Comic, Author } = require('../models');
 const { Op } = require('sequelize');
 const Joi = require('joi');
 const logger = require('../utils/logger');
@@ -58,7 +58,13 @@ exports.getComicById = async (req, res) => {
         if (isNaN(comicId)) {
             return res.status(400).json({ message: 'Comic ID is not valid.' });
         }
-        const comic = await Comic.findByPk(comicId);
+        const comic = await Comic.findByPk(comicId, {
+            include: {
+                model: Author,
+                as: 'author',
+                attributes: ['id', 'name', 'image', 'birthdate']
+            }
+        });
         if (!comic) {
             return res.status(404).json({ message: 'Comic not found' });
         }
