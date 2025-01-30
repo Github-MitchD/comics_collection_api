@@ -4,6 +4,7 @@ const { sequelize } = require('./models');
 const comicsController = require('./controllers/comicsController');
 require('dotenv').config();
 const path = require('path');
+const { BASE_URL } = require('./config');
 
 const app = express();
 const SERVER_PORT = process.env.SERVER_PORT || 8989;
@@ -30,7 +31,7 @@ app.get('/', (req, res) => {
     res.status(200).json({
         message: 'Welcome to the Comics Collection API',
         version: '1.0.0',
-        documentation: 'http://localhost:8989/docs',
+        documentation: `${BASE_URL}/docs`,
         status: 'API is running',
         author: {
             name: 'Michel Dufour',
