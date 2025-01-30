@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const { sequelize } = require('./models');
 const comicsController = require('./controllers/comicsController');
 require('dotenv').config();
+const path = require('path');
 
 const app = express();
 const SERVER_PORT = process.env.SERVER_PORT || 8989;
@@ -20,6 +21,9 @@ const { swaggerUi, specs, swaggerOptions } = require('./config/swagger');
 
 // Route pour la documentation Swagger
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerOptions));
+
+// Permet de servir le dossier "public" statiquement
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Route pour la racine de l'API
 app.get('/', (req, res) => {
