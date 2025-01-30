@@ -1,12 +1,13 @@
 const { Author } = require('../models');
 const Joi = require('joi');
 const logger = require('../utils/logger');
+const { BASE_URL } = require('../config');
 
 // Schéma de validation pour les auteurs
 const authorSchema = Joi.object({
     name: Joi.string().required(),
     slug: Joi.string().required(),
-    image: Joi.string().required(),
+    image: Joi.string().optional(), // Gestion par 'multer'
     birthdate: Joi.date().optional(),
     bio: Joi.string().optional(),
     website: Joi.string().uri().optional()
@@ -19,10 +20,29 @@ exports.createAuthor = async (req, res) => {
             return res.status(400).json({ message: error.details[0].message });
         }
 
-        const { name, slug, image, birthdate, bio, website } = req.body;
-        const newAuthor = await Author.create({ name, slug, image, birthdate, bio, website });
+        const { name, slug, birthdate, bio, website } = req.body;
+
+        // Gestion de l'image par 'multer'
+        // Multer stocke tout dans req.file (si on utilise upload.single('image'))
+        // req.file contiendra notamment:
+        //   - req.file.filename     => le nom final du fichier sur le serveur
+        //   - req.file.path         => le chemin complet vers le fichier
+        //   - req.file.originalname => le nom original envoyé par le client
+        let imageName = 'default_author.jpg';
+        if (req.file) {
+            imageName = req.file.filename;
+        }
+
+        const newAuthor = await Author.create({ name, slug, image: imageName, birthdate, bio, website });
         logger.info(`Author with name "${name}" was created by user ${req.user.id}.`);
-        return res.status(201).json(newAuthor);
+
+        const imageUrl = `${BASE_URL}/public/uploads/authors/${imageName}`;
+        const authorResponse = {
+            ...newAuthor.toJSON(),
+            image: imageUrl
+        };
+        console.log(authorResponse);
+        return res.status(201).json(authorResponse);
     } catch (error) {
         if (error.name === 'SequelizeUniqueConstraintError') {
             return res.status(400).json({ message: 'Author with this name already exists.' });
@@ -43,11 +63,18 @@ exports.getAllAuthors = async (req, res) => {
             order: [['createdAt', 'DESC']]
         });
 
+        // Ajoute l'URL complète de l'image pour chaque auteur
+        const authors = rows.map(author => {
+            const authorJson = author.toJSON();
+            authorJson.image = `${BASE_URL}/public/uploads/authors/${author.image}`;
+            return authorJson;
+        });
+
         return res.status(200).json({
             total: count,
             pages: Math.ceil(count / limit),
             currentPage: parseInt(page),
-            authors: rows
+            authors: authors
         });
     } catch (error) {
         logger.error(`Error fetching authors: ${error.message}`);
