@@ -28,11 +28,15 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
+        const expiresIn = process.env.JWT_EXPIRATION;
+        const expiresInMs = parseInt(expiresIn) * 60 * 60 * 1000; // Converti les heures en millisecondes
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn });
         if (!token) {
             return res.status(500).json({ message: 'Token generation failed' });
         }
-        res.status(200).json({ message: 'Login successful', token });
+        
+        const expirationDate = new Date(Date.now() + expiresInMs);
+        res.status(200).json({ message: 'Login successful', token, expiresAt: expirationDate.toISOString() });
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
