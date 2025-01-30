@@ -1,5 +1,6 @@
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const { BASE_URL } = require('./config');
 
 const options = {
     definition: {
@@ -21,7 +22,7 @@ const options = {
         },
         servers: [
             {
-                url: 'http://localhost:8989',
+                url: `${BASE_URL}`,
                 description: 'Local server'
             },
             {
