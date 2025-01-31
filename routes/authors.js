@@ -1,12 +1,13 @@
 const express = require('express');
-const { createAuthor, getAllAuthors, getAuthorById, updateAuthor, deleteAuthor } = require('../controllers/authorController');
+const { createAuthor, getAllAuthors, getAuthorById, getAuthorBySlug, updateAuthor, deleteAuthor } = require('../controllers/authorController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 const uploadAuthors = require('../config/multerAuthors');
 
 router.post('/', authMiddleware, uploadAuthors.single('image'), createAuthor);
 router.get('/', getAllAuthors);
-router.get('/:id', getAuthorById);
+router.get('/id/:id', getAuthorById);
+router.get('/name/:slug', getAuthorBySlug);
 router.put('/:id', authMiddleware, uploadAuthors.single('image'), updateAuthor);
 router.delete('/:id', authMiddleware, deleteAuthor);
 
@@ -107,7 +108,7 @@ router.delete('/:id', authMiddleware, deleteAuthor);
 
 /**
  * @swagger
- * /authors/{id}:
+ * /authors/id/{id}:
  *   get:
  *     summary: Retrieve an author by ID
  *     tags: [Authors]
@@ -130,6 +131,32 @@ router.delete('/:id', authMiddleware, deleteAuthor);
  *       500:
  *         description: Server error
 */
+
+/**
+ * @swagger
+ * /authors/name/{slug}:
+ *   get:
+ *     summary: Retrieve an author by slug
+ *     tags: [Authors]
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Author slug
+ *     responses:
+ *       200:
+ *         description: An author
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Author'
+ *       404:
+ *         description: Author not found
+ *       500:
+ *         description: Server error
+ */
 
 /**
  * @swagger
