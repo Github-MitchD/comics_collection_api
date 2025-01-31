@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
         // Récupère l'extension du fichier original
         const ext = path.extname(file.originalname);
         // Construit le nom final du fichier
-        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+        cb(null, file.fieldname + 'Author-' + uniqueSuffix + ext);
     }
 });
 
