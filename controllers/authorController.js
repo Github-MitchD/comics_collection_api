@@ -41,7 +41,6 @@ exports.createAuthor = async (req, res) => {
             ...newAuthor.toJSON(),
             image: imageUrl
         };
-        console.log(authorResponse);
         return res.status(201).json(authorResponse);
     } catch (error) {
         if (error.name === 'SequelizeUniqueConstraintError') {
@@ -99,6 +98,23 @@ exports.getAuthorById = async (req, res) => {
         return res.status(200).json(author);
     } catch (error) {
         logger.error(`Error fetching author with ID ${req.params.id}: ${error.message}`);
+        return res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+exports.getAuthorBySlug = async (req, res) => {
+    const { slug } = req.params;
+    try {
+        if (!slug) {
+            return res.status(400).json({ message: 'Author slug is required.' });
+        }
+        const author = await Author.findOne({ where: { slug }, include: ['comics'] });
+        if (!author) {
+            return res.status(404).json({ message: 'Author not found' });
+        }
+        return res.status(200).json(author);
+    } catch (error) {
+        logger.error(`Error fetching author with slug ${req.params.slug}: ${error.message}`);
         return res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
