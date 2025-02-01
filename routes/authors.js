@@ -8,7 +8,7 @@ router.post('/', authMiddleware, uploadAuthors.single('image'), createAuthor);
 router.get('/', getAllAuthors);
 router.get('/id/:id', getAuthorById);
 router.get('/name/:slug', getAuthorBySlug);
-router.put('/:id', authMiddleware, uploadAuthors.single('image'), updateAuthor);
+router.put('/id/:id', authMiddleware, uploadAuthors.single('image'), updateAuthor);
 router.delete('/:id', authMiddleware, deleteAuthor);
 
 /**
