@@ -1,5 +1,5 @@
 const express = require('express');
-const { createAuthor, getAllAuthors, getAuthorById, getAuthorBySlug, updateAuthor, deleteAuthor } = require('../controllers/authorController');
+const { createAuthor, getAllAuthors, getAuthorById, getAuthorBySlug, updateAuthorWithoutImage,updateAuthorWithImage, deleteAuthor } = require('../controllers/authorController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 const uploadAuthors = require('../config/multerAuthors');
@@ -8,7 +8,8 @@ router.post('/', authMiddleware, uploadAuthors.single('image'), createAuthor);
 router.get('/', getAllAuthors);
 router.get('/id/:id', getAuthorById);
 router.get('/name/:slug', getAuthorBySlug);
-router.put('/id/:id', authMiddleware, uploadAuthors.single('image'), updateAuthor);
+router.put('/id/withoutImage/:id', authMiddleware, updateAuthorWithoutImage);
+router.put('/id/withImage/:id', authMiddleware, uploadAuthors.single('image'), updateAuthorWithImage);
 router.delete('/:id', authMiddleware, deleteAuthor);
 
 /**
