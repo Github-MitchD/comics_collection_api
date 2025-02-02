@@ -7,7 +7,15 @@ const { BASE_URL } = require('../config');
 const authorSchema = Joi.object({
     name: Joi.string().required(),
     slug: Joi.string().required(),
-    image: Joi.string().optional(), // Gestion par 'multer'
+    image: Joi.string().optional(),
+    birthdate: Joi.date().optional(),
+    bio: Joi.string().optional(),
+    website: Joi.string().uri().optional()
+});
+// Schéma de validation pour les auteurs sans image
+const authorSchemaWithoutImage = Joi.object({
+    name: Joi.string().required(),
+    slug: Joi.string().required(),
     birthdate: Joi.date().optional(),
     bio: Joi.string().optional(),
     website: Joi.string().uri().optional()
@@ -119,7 +127,38 @@ exports.getAuthorBySlug = async (req, res) => {
     }
 };
 
-exports.updateAuthor = async (req, res) => {
+exports.updateAuthorWithoutImage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: 'Author ID is required.' });
+        }
+        const authorId = parseInt(id);
+        if (isNaN(authorId)) {
+            return res.status(400).json({ message: 'Author ID is not valid.' });
+        }
+        const { error } = authorSchemaWithoutImage.validate(req.body);
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
+        }
+        const author = await Author.findByPk(id);
+        if (!author) {
+            return res.status(404).json({ message: 'Author not found' });
+        }
+        const { name, slug, birthdate, bio, website } = req.body;
+        await author.update({ name, slug, birthdate, bio, website });
+        logger.info(`Author with ID ${id} was updated by user ${req.user.id}`);
+        return res.status(200).json(author);
+    } catch (error) {
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({ message: 'Author with this name already exists.' });
+        }
+        logger.error(`Error updating author with ID ${req.params.id}: ${error.message}`);
+        return res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+exports.updateAuthorWithImage = async (req, res) => {
     try {
         const { id } = req.params;
         if (!id) {
@@ -133,16 +172,23 @@ exports.updateAuthor = async (req, res) => {
         if (error) {
             return res.status(400).json({ message: error.details[0].message });
         }
-
         const author = await Author.findByPk(id);
         if (!author) {
             return res.status(404).json({ message: 'Author not found' });
         }
-
-        const { name, slug, image, birthdate, bio, website } = req.body;
-        const updatedAuthor = await author.update({ name, slug, image, birthdate, bio, website });
+        const { name, slug, birthdate, bio, website } = req.body;
+        let imageName = author.image;
+        if (req.file) {
+            imageName = req.file.filename;
+        }
+        await author.update({ name, slug, image: imageName, birthdate, bio, website });
         logger.info(`Author with ID ${id} was updated by user ${req.user.id}`);
-        return res.status(200).json(updatedAuthor);
+        const imageUrl = `${BASE_URL}/public/uploads/authors/${imageName}`;
+        const authorResponse = {
+            ...author.toJSON(),
+            image: imageUrl
+        };
+        return res.status(200).json(authorResponse);
     } catch (error) {
         if (error.name === 'SequelizeUniqueConstraintError') {
             return res.status(400).json({ message: 'Author with this name already exists.' });
