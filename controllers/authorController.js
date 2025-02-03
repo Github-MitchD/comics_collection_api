@@ -1,4 +1,4 @@
-const { Author } = require('../models');
+const { sequelize, Author } = require('../models');
 const Joi = require('joi');
 const logger = require('../utils/logger');
 const { BASE_URL } = require('../config');
@@ -67,7 +67,20 @@ exports.getAllAuthors = async (req, res) => {
         const { count, rows } = await Author.findAndCountAll({
             limit: parseInt(limit),
             offset: parseInt(offset),
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            attributes: {
+                include: [
+                    [
+                        sequelize.literal(`(
+                            SELECT COUNT(*)
+                            FROM \`Comics\`
+                            WHERE \`Comics\`.\`authorId\` = \`Author\`.\`id\`
+                              AND \`Comics\`.\`deletedAt\` IS NULL
+                          )`),
+                        'comicsCount'
+                    ]
+                ]
+            },
         });
 
         // Ajoute l'URL complète de l'image pour chaque auteur
