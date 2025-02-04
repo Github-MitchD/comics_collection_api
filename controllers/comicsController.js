@@ -32,7 +32,12 @@ exports.getAllComics = async (req, res) => {
             where,
             limit: parseInt(limit),
             offset: parseInt(offset),
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            include: [{
+                model: Author,
+                as: 'author',
+                attributes: ['name']
+            }]
         });
 
         return res.status(200).json({
