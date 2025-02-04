@@ -67,7 +67,7 @@ exports.getAllAuthors = async (req, res) => {
         const { count, rows } = await Author.findAndCountAll({
             limit: parseInt(limit),
             offset: parseInt(offset),
-            order: [['createdAt', 'DESC']],
+            order: [['name', 'ASC']],
             attributes: {
                 include: [
                     [
