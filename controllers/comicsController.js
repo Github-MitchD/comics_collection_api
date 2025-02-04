@@ -6,13 +6,12 @@ const logger = require('../utils/logger');
 // Schéma de validation pour les comics
 const comicSchema = Joi.object({
     title: Joi.string().required(),
-    slug: Joi.string().required(),
-    frontCover: Joi.string().required(),
-    backCover: Joi.string().required(),
+    slug: Joi.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).required(),
+    frontCover: Joi.string().optional(),
     description: Joi.string().required(),
     collection: Joi.string().required(),
     tome: Joi.number().integer().required(),
-    author: Joi.string().required()
+    authorId: Joi.number().integer().required(),
 });
 
 exports.getAllComics = async (req, res) => {
@@ -76,6 +75,23 @@ exports.getComicById = async (req, res) => {
     }
 };
 
+exports.getComicBySlug = async (req, res) => {
+    try {
+        const { slug } = req.params;
+        if (!slug) {
+            return res.status(400).json({ message: 'Comic slug is required.' });
+        }
+        const comic = await Comic.findOne({ where: { slug } });
+        if (!comic) {
+            return res.status(404).json({ message: 'Comic not found' });
+        }
+        return res.status(200).json(comic);
+    } catch (error) {
+        logger.error(`Error fetching comic with slug ${req.params.slug}: ${error.message}`);
+        return res.status(500).json({ message: 'There was a problem trying to get the comic', error: error.message });
+    }
+};
+
 exports.getComicsByAuthor = async (req, res) => {
     try {
         const { author } = req.params;
@@ -128,8 +144,13 @@ exports.createComic = async (req, res) => {
         if (error) {
             return res.status(400).json({ message: error.details[0].message });
         }
-        const { title, slug, frontCover, backCover, description, collection, tome, author } = req.body;
-        const newComic = await Comic.create({ title, slug, frontCover, backCover, description, collection, tome, author });
+        const { title, slug, description, collection, tome, authorId } = req.body;
+
+        let imageName = 'default_comic.jpg';
+        if (req.file && req.file.filename) {
+            imageName = req.file.filename;
+        }
+        const newComic = await Comic.create({ title, slug, frontCover: imageName, description, collection, tome, authorId });
         logger.info(`Comic with title "${title}" was created by user ${req.user.id}`);
         return res.status(201).json(newComic);
     } catch (error) {
