@@ -81,7 +81,10 @@ exports.getComicBySlug = async (req, res) => {
         if (!slug) {
             return res.status(400).json({ message: 'Comic slug is required.' });
         }
-        const comic = await Comic.findOne({ where: { slug } });
+        const comic = await Comic.findOne({ 
+            where: { slug }, 
+            include: [{ model: Author, as: 'author' }] 
+        });
         if (!comic) {
             return res.status(404).json({ message: 'Comic not found' });
         }
