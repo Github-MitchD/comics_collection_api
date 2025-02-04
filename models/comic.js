@@ -60,11 +60,6 @@ module.exports = (sequelize) => {
         key: 'id'
       }
     },
-    deletedAt: {
-      type: DataTypes.DATE,
-    }
-  }, {
-    paranoid: true,
   });
 
   Comic.associate = (models) => {
