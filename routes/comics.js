@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllComics, getComicById, getComicBySlug, getComicsByAuthor, getComicsByCollection, createComic, updateComic, deleteComic } = require('../controllers/comicsController');
+const { getAllComics, getComicById, getComicBySlug, getComicsByAuthor, getComicsByCollection, createComic, updateComicWithoutImage, updateComicWithImage, deleteComic } = require('../controllers/comicsController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const uploadComics = require('../config/multerComics');
 
@@ -11,7 +11,8 @@ router.get('/title/:slug', getComicBySlug);
 router.get('/author/:author', getComicsByAuthor);
 router.get('/collection/:collection', getComicsByCollection);
 router.post('/', authMiddleware, uploadComics.single('frontCover'), createComic);
-router.put('/:id', authMiddleware, updateComic);
+router.put('/id/withoutImage/:id', authMiddleware, updateComicWithoutImage);
+router.put('/id/withImage/:id', authMiddleware, uploadComics.single('frontCover'), updateComicWithImage);
 router.delete('/:id', authMiddleware, deleteComic);
 
 /**
