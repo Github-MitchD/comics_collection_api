@@ -30,11 +30,7 @@ module.exports = (sequelize) => {
     },
     backCover: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: { msg: "The backCover is required." },
-        notNull: { msg: "The backCover is required." },
-      }
+      allowNull: true,
     },
     description: {
       type: DataTypes.TEXT,
