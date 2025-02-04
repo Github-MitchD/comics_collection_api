@@ -2,12 +2,22 @@ const { Comic, Author } = require('../models');
 const { Op } = require('sequelize');
 const Joi = require('joi');
 const logger = require('../utils/logger');
+const { BASE_URL } = require('../config');
 
 // Schéma de validation pour les comics
 const comicSchema = Joi.object({
     title: Joi.string().required(),
     slug: Joi.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).required(),
     frontCover: Joi.string().optional(),
+    description: Joi.string().required(),
+    collection: Joi.string().required(),
+    tome: Joi.number().integer().required(),
+    authorId: Joi.number().integer().required(),
+});
+// Schéma de validation pour les comics sans frontCover
+const comicSchemaWithoutImage = Joi.object({
+    title: Joi.string().required(),
+    slug: Joi.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).required(),
     description: Joi.string().required(),
     collection: Joi.string().required(),
     tome: Joi.number().integer().required(),
@@ -93,7 +103,12 @@ exports.getComicBySlug = async (req, res) => {
         if (!comic) {
             return res.status(404).json({ message: 'Comic not found' });
         }
-        return res.status(200).json(comic);
+        const imageUrl = `${BASE_URL}/public/uploads/comics/${comic.frontCover}`;
+        const comicResponse = {
+            ...comic.toJSON(),
+            frontCover: imageUrl
+        };
+        return res.status(200).json(comicResponse);
     } catch (error) {
         logger.error(`Error fetching comic with slug ${req.params.slug}: ${error.message}`);
         return res.status(500).json({ message: 'There was a problem trying to get the comic', error: error.message });
@@ -170,7 +185,7 @@ exports.createComic = async (req, res) => {
     }
 };
 
-exports.updateComic = async (req, res) => {
+exports.updateComicWithoutImage = async (req, res) => {
     try {
         const { id } = req.params;
         if (!id) {
@@ -181,7 +196,7 @@ exports.updateComic = async (req, res) => {
             return res.status(400).json({ message: 'Comic ID is not valid.' });
         }
 
-        const { error } = comicSchema.validate(req.body);
+        const { error } = comicSchemaWithoutImage.validate(req.body);
         if (error) {
             return res.status(400).json({ message: error.details[0].message });
         }
@@ -219,6 +234,47 @@ exports.updateComic = async (req, res) => {
         return res.status(500).json({ message: 'There was a problem trying to update the comic', error: error.message });
     }
 };
+
+exports.updateComicWithImage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: 'Comic ID is required.' });
+        }
+        const comicId = parseInt(id);
+        if (isNaN(comicId)) {
+            return res.status(400).json({ message: 'Comic ID is not valid.' });
+        }
+        const { error } = comicSchema.validate(req.body);
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
+        }
+        const comic = await Comic.findByPk(id);
+        if (!comic) {
+            return res.status(404).json({ message: 'Comic not found' });
+        }
+        const { title, slug, description, collection, tome, authorId } = req.body;
+        let imageName = comic.image;
+        if (req.file) {
+            imageName = req.file.filename;
+        }
+        await comic.update({ title, slug, frontCover: imageName, description, collection, tome, authorId });
+        logger.info(`Comic with ID ${id} was updated by user ${req.user.id}`);
+        const imageUrl = `${BASE_URL}/public/uploads/comics/${imageName}`;
+        const comicResponse = {
+            ...comic.toJSON(),
+            frontCover: imageUrl
+        };
+        console.log('ma reponse', comicResponse);
+        return res.status(200).json(comicResponse);
+    } catch (error) {
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({ message: 'Comic with this title already exists.' });
+        }
+        logger.error(`Error updating comic with ID ${req.params.id}: ${error.message}`);
+        return res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+}
 
 exports.deleteComic = async (req, res) => {
     try {
