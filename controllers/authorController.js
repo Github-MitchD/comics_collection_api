@@ -1,4 +1,4 @@
-const { sequelize, Author } = require('../models');
+const { sequelize, Author, Comic } = require('../models');
 const Joi = require('joi');
 const logger = require('../utils/logger');
 const { BASE_URL } = require('../config');
@@ -75,7 +75,6 @@ exports.getAllAuthors = async (req, res) => {
                             SELECT COUNT(*)
                             FROM \`Comics\`
                             WHERE \`Comics\`.\`authorId\` = \`Author\`.\`id\`
-                              AND \`Comics\`.\`deletedAt\` IS NULL
                           )`),
                         'comicsCount'
                     ]
@@ -129,7 +128,15 @@ exports.getAuthorBySlug = async (req, res) => {
         if (!slug) {
             return res.status(400).json({ message: 'Author slug is required.' });
         }
-        const author = await Author.findOne({ where: { slug }, include: ['comics'] });
+        const author = await Author.findOne({
+            where: { slug },
+            include: [{
+                model: Comic,
+                as: 'comics',
+                separate: true, // L'option separate permet de séparer les résultats
+                order: [['collection', 'ASC'], ['tome', 'ASC']]
+            }]
+        });
         if (!author) {
             return res.status(404).json({ message: 'Author not found' });
         }
