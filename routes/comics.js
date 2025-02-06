@@ -89,6 +89,33 @@ router.delete('/:id', authMiddleware, deleteComic);
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * /comics/title/{slug}:
+ *   get:
+ *     summary: Retrieve a comic by slug
+ *     tags: [Comics]
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Comic slug
+ *     responses:
+ *       200:
+ *         description: A comic
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comic'
+ *       404:
+ *         description: Comic not found
+ *       500:
+ *         description: Server error
+ */
+
 /**
  * @swagger
  * /comics/author/{author}:
@@ -143,6 +170,26 @@ router.delete('/:id', authMiddleware, deleteComic);
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * /comics/news/desc:
+ *   get:
+ *     summary: Retrieve the latest comics
+ *     tags: [Comics]
+ *     responses:
+ *       200:
+ *         description: A list of the latest comics
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Comic'
+ *       500:
+ *         description: Server error
+ */
+
 /**
  * @swagger
  * /comics:
@@ -203,11 +250,12 @@ router.delete('/:id', authMiddleware, deleteComic);
  *       500:
  *         description: Server error
  */
+
 /**
  * @swagger
- * /comics/{id}:
+ * /comics/id/withoutImage/{id}:
  *   put:
- *     summary: Update a comic by ID
+ *     summary: Update a comic by ID without changing the image
  *     tags: [Comics]
  *     security:
  *       - bearerAuth: []
@@ -231,12 +279,6 @@ router.delete('/:id', authMiddleware, deleteComic);
  *               slug:
  *                 type: string
  *                 description: Slug of the comic
- *               frontCover:
- *                 type: string
- *                 description: URL of the front cover image
- *               backCover:
- *                 type: string
- *                 description: URL of the back cover image
  *               description:
  *                 type: string
  *                 description: Description of the comic
@@ -263,6 +305,65 @@ router.delete('/:id', authMiddleware, deleteComic);
  *       500:
  *         description: Server error
  */
+
+/**
+ * @swagger
+ * /comics/id/withImage/{id}:
+ *   put:
+ *     summary: Update a comic by ID with changing the image
+ *     tags: [Comics]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Comic ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Title of the comic
+ *               slug:
+ *                 type: string
+ *                 description: Slug of the comic
+ *               frontCover:
+ *                 type: string
+ *                 description: URL of the front cover image
+ *               description:
+ *                 type: string
+ *                 description: Description of the comic
+ *               collection:
+ *                 type: string
+ *                 description: Collection name
+ *               tome:
+ *                 type: integer
+ *                 description: Tome number
+ *               authorId:
+ *                 type: integer
+ *                 description: ID of the author
+ *     responses:
+ *       200:
+ *         description: Comic updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comic'
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Comic not found
+ *       500:
+ *         description: Server error
+ */
+
 /**
  * @swagger
  * /comics/{id}:
