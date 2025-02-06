@@ -62,6 +62,24 @@ exports.getAllComics = async (req, res) => {
     }
 };
 
+exports.getLatestComics = async (req, res) => {
+    try {
+        const comics = await Comic.findAll({
+            limit: 10,
+            order: [['createdAt', 'DESC']],
+            include: {
+                model: Author,
+                as: 'author',
+                attributes: ['name', 'slug']
+            }
+        });
+        return res.status(200).json(comics);
+    } catch (error) {
+        logger.error(`Error fetching latest comics: ${error.message}`);
+        return res.status(500).json({ message: 'There was a problem trying to get the latest comics', error: error.message });
+    }
+};
+
 exports.getComicById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -146,8 +164,9 @@ exports.getComicsByCollection = async (req, res) => {
         }
 
         const comics = await Comic.findAll({
-            where: { collection: { [Op.like]: `%${collection}%` } },
-            order: [['createdAt', 'DESC']]
+            // where: { collection: { [Op.like]: `%${collection}%` } },
+            where: { collection: collection },
+            order: [['tome', 'ASC']]
         });
 
         if (comics.length === 0) {
