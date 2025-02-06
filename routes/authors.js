@@ -161,7 +161,7 @@ router.delete('/:id', authMiddleware, deleteAuthor);
 
 /**
  * @swagger
- * /authors/{id}:
+ * /authors/id/withImage/{id}:
  *   put:
  *     summary: Update an author by ID
  *     tags: [Authors]
@@ -186,7 +186,7 @@ router.delete('/:id', authMiddleware, deleteAuthor);
  *                 description: Name of the author
  *               slug:
  *                 type: string
- *                 description: Slug of the author *               
+ *                 description: Slug of the author
  *               image:
  *                 type: string
  *                 description: URL of the author's image
@@ -212,7 +212,60 @@ router.delete('/:id', authMiddleware, deleteAuthor);
  *         description: Author not found
  *       500:
  *         description: Server error
-*/
+ */
+
+/**
+ * @swagger
+ * /authors/id/withoutImage/{id}:
+ *   put:
+ *     summary: Update an author by ID without changing the image
+ *     tags: [Authors]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Author ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Name of the author
+ *               slug:
+ *                 type: string
+ *                 description: Slug of the author
+ *               birthdate:
+ *                 type: string
+ *                 format: date
+ *                 description: Birthdate of the author
+ *               bio:
+ *                 type: string
+ *                 description: Biography of the author
+ *               website:
+ *                 type: string
+ *                 description: Website of the author
+ *     responses:
+ *       200:
+ *         description: Author updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Author'
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Author not found
+ *       500:
+ *         description: Server error
+ */
 
 /**
  * @swagger
